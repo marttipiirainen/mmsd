@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+import gobject
+import dbus
+import dbus.service
+import dbus.mainloop.glib
+
+#
+# Provisioning test consumer
+# Based on an example consumer script from mmsd documentation
+#
+
+if getattr(dbus, 'version', (0,0,0)) >= (0,41,0):
+	import dbus.glib
+
+class ServerObject(dbus.service.Object):
+	def __init__(self):
+		# Here the service name
+		bus_name = dbus.service.BusName("org.nemomobile.provision",
+							bus=dbus.SessionBus())
+		# Here the object path
+		dbus.service.Object.__init__(self, bus_name, "/org/nemomobile/provision")
+
+	# Here the interface name, and the method is named same as on dbus.
+	@dbus.service.method("org.ofono.mms.PushConsumer",
+				in_signature="ayay", out_signature="i")
+	def Notify(self, hdr, body):
+		f = open("/tmp/prov.out", "wb")
+		f.write("hdr len = " + str(len(hdr)) + "\n")
+		f.write("body len = " + str(len(body)) + "\n")
+		f.close()
+		return 0
+
+	@dbus.service.method("org.ofono.mms.PushConsumer")
+	def Release(self):
+		mainloop.quit()
+
+if __name__ == '__main__':
+	dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+	server = ServerObject()
+
+	mainloop = gobject.MainLoop()
+	mainloop.run()
+
