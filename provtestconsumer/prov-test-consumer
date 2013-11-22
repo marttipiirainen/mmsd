@@ -5,6 +5,11 @@ import dbus.service
 import dbus.mainloop.glib
 
 #
+# Copyright 2013 Jolla Ltd.
+#
+# This program is distributed under the terms of the
+# GNU General Public License version 2 or later.
+#
 # Provisioning test consumer
 # Based on an example consumer script from mmsd documentation
 #
