@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.nemomobile.provision
+Exec=/usr/libexec/provisioningservice
+
