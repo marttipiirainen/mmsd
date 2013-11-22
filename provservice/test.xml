@@ -1,0 +1,23 @@
+<!DOCTYPE wap-provisioningdoc PUBLIC "-//WAPFORUM//DTD PROV 1.0//EN" "http://www.wapforum.org/DTD/prov.dtd">
+<wap-provisioningdoc>
+<characteristic type="APPLICATION">
+<parm name="APPID" value="w5"/>
+<parm name="NAME" value="Sync Server"/>
+<parm name="TO-NAPID" value="INTERNET"/>
+<characteristic type="APPADDR">
+<parm name="ADDR" value="http://www.aftersales.com.au/sync4j/sync"/>
+<characteristic type="PORT">
+<parm name="PORTNBR" value="8080"/>
+</characteristic>
+</characteristic>
+<characteristic type="RESOURCE">
+<parm name="URI" value="./ycontact"/>
+<parm name="NAME" value="Contact DB"/>
+<parm name="AACCEPT" value="text/x-vcard,text/vcard"/>
+</characteristic>
+<characteristic type="APPAUTH">
+<parm name="AAUTHNAME" value="guest"/>
+<parm name="AAUTHSECRET" value="guest"/>
+</characteristic>
+</characteristic>
+ </wap-provisioningdoc> 
