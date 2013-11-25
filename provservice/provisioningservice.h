@@ -18,6 +18,7 @@ class ProvisioningService : public QObject
 
 public:
     explicit ProvisioningService(QObject *parent = 0);
+	void Notify(const QByteArray &header, const QByteArray &body);
 
 public slots:
 

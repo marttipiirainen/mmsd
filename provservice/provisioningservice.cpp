@@ -19,6 +19,7 @@
 #include <QDBusConnection>
 
 #include "provisioningservice.h"
+#include "provisioningservicedbus.h"
 
 #include <wbxml.h>
 #include <wbxml_config.h>
@@ -28,40 +29,44 @@ ProvisioningService::ProvisioningService(QObject *parent)
 {
     qDebug() << ">>ProvisioningService";
 
-#ifdef WBXML_LANG_PROV10
-    qDebug() << "prov10 apparently ok";
-#else
-    qDebug() << "prov10 apparently not ok (not sure what this means)";
-#endif
-
     if(!QDBusConnection::sessionBus().registerService("org.nemomobile.provision"))
     {
-
         qDebug() << "Failed to register DBus service: " << QDBusConnection::sessionBus().lastError().message();
         return;
     }
 
-    if(!QDBusConnection::sessionBus().registerObject("/org/nemomobile/provision", this))
-    {
-    	qDebug() << "Failed to register DBus object: " << QDBusConnection::sessionBus().lastError().message();
-        return;
-    }
+    qDebug() << "<<ProvisioningService";
+}
 
+/*
+ * Implements the mmsd PushConsumer interface
+ */
+void ProvisioningService::Notify(const QByteArray &header, const QByteArray &body){
+    qDebug() << ">>Notify";
+	qDebug() << "header len " << header.length() << "body len " << body.length();
 
-    // TODO implement interface "org.ofono.mms.PushConsumer"
-    //
-    QFile file("./prov.wbxml");
-    if (!file.open(QIODevice::ReadOnly)) {
+    QFile file_enc("/tmp/prov_body.wbxml");
+    if (!file_enc.open(QIODevice::ReadWrite)) {
     	qDebug() << "no file";
     	return;
     }
-    QByteArray fileBlob = file.readAll();
-    QByteArray dst;
-    bool success = this->decodeFromWbXML(fileBlob, dst, true);
-    qDebug() << "success: " << success;
-    qDebug() << "dst: " << dst;
+    qDebug() << "Wrote " << file_enc.write(body,body.length()) << " encoded bytes";
+    file_enc.close();
 
-    qDebug() << "<<ProvisioningService";
+    QByteArray dst;
+    bool success = this->decodeFromWbXML(body, dst, true);
+    qDebug() << "Decode success: " << success;
+    qDebug() << "Decoded data:\n" << dst;
+
+    QFile file_dec("/tmp/prov_body_decoded.xml");
+    if (!file_dec.open(QIODevice::ReadWrite)) {
+    	qDebug() << "no file";
+    	return;
+    }
+    qDebug() << "Wrote " << file_dec.write(dst,dst.length()) << " decoded bytes";
+    file_dec.close();
+
+    qDebug() << "<<Notify";
 }
 
 /*
@@ -116,7 +121,6 @@ bool ProvisioningService::decodeFromWbXML( const QByteArray& aWbXMLDocument, QBy
 
 }
 
-
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
@@ -124,7 +128,9 @@ int main(int argc, char **argv)
     QCoreApplication::setOrganizationName("nemomobile");
     QCoreApplication::setApplicationName("provisioningservice");
 
-    ProvisioningService service;
+    ProvisioningService *service = new ProvisioningService();
+    new ProvisioningServiceDBusAdaptor(service);
+    QDBusConnection::sessionBus().registerObject("/org/nemomobile/provision", service);
 
     return app.exec();
 }
