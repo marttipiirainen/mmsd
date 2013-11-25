@@ -11,6 +11,7 @@
 #define PROVISIONINGSERVICE_H
 
 #include <QObject>
+#include <QStringList>
 
 class ProvisioningService : public QObject
 {
@@ -33,6 +34,11 @@ private:
      */
     bool decodeFromWbXML( const QByteArray& aWbXMLDocument, QByteArray& aXMLDocument,
                           bool aPrettyPrint ) const;
+
+    /*
+     * Parse PROV 1.0 data, return all found Access Point Names
+     */
+    QStringList Parse(const QByteArray &doc);
 
 };
 

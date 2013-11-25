@@ -13,10 +13,16 @@
  */
 
 #include <QCoreApplication>
+#include <QStringList>
 #include <QFile>
 #include <QDebug>
+
 #include <QDBusError>
 #include <QDBusConnection>
+
+#include <QXmlStreamReader>
+#include <QProcess>
+#include <QThread>
 
 #include "provisioningservice.h"
 #include "provisioningservicedbus.h"
@@ -35,9 +41,52 @@ ProvisioningService::ProvisioningService(QObject *parent)
         return;
     }
 
+
     qDebug() << "<<ProvisioningService";
 }
 
+/*
+ * Parse PROV 1.0 data, return all found Access Point Names
+ */
+QStringList ProvisioningService::Parse(const QByteArray &doc) {
+    QXmlStreamReader xml;
+    xml.addData(doc);
+    QStringList apns;
+
+    while (!xml.atEnd()) {
+        xml.readNext();
+
+        if (!xml.dtdName().isNull()){
+            qDebug() << "DTD name: " << xml.dtdName();
+        }
+        if (!xml.dtdPublicId().isNull()){
+            qDebug() << "DTD ID: " << xml.dtdPublicId();
+        }
+
+        /*
+         * TODO: This is quick & lazy, of course we should check if this
+         * is inside a 'CHARACTERISTIC' element
+         */
+		if (0 == xml.name().compare("PARM", Qt::CaseInsensitive)) {
+			QXmlStreamAttributes attrs = xml.attributes();
+			QVectorIterator<QXmlStreamAttribute> i(attrs);
+			while (i.hasNext()) {
+				QXmlStreamAttribute attr = i.next();
+				if (0 == attr.value().compare("NAP-ADDRESS", Qt::CaseInsensitive)
+				&& i.hasNext()) {
+					attr = i.next();
+					const QString apn = attr.value().toString();
+					apns << apn;
+				}
+			}
+    	}
+    }
+    if (xml.hasError()) {
+          qDebug() << "Problem in parsing";
+    }
+
+    return apns;
+}
 /*
  * Implements the mmsd PushConsumer interface
  */
@@ -45,6 +94,7 @@ void ProvisioningService::Notify(const QByteArray &header, const QByteArray &bod
     qDebug() << ">>Notify";
 	qDebug() << "header len " << header.length() << "body len " << body.length();
 
+/* Writing to files, useful for testing
     QFile file_enc("/tmp/prov_body.wbxml");
     if (!file_enc.open(QIODevice::ReadWrite)) {
     	qDebug() << "no file";
@@ -65,6 +115,21 @@ void ProvisioningService::Notify(const QByteArray &header, const QByteArray &bod
     }
     qDebug() << "Wrote " << file_dec.write(dst,dst.length()) << " decoded bytes";
     file_dec.close();
+*/
+
+    qDebug() << "Start XML parsing";
+    QStringList apns = this->Parse(dst);
+    qDebug() << "Done XML parsing, found these APNs: " << apns;
+
+    if (apns.count() > 0) {
+    	qDebug() << "Creating oFono Context for APN " << apns.at(0);
+    	/* TODO: Use proper D-Bus API, not oFono test python script */
+    	/* TODO: Do this for all APNs and access point types */
+    	QStringList arguments;
+    	arguments << apns.at(0);
+    	QProcess *scriptProcess = new QProcess(this);
+    	scriptProcess->start("/usr/lib/ofono/test/create-internet-context", arguments);
+    }
 
     qDebug() << "<<Notify";
 }
