@@ -11,7 +11,6 @@
 #define PROVISIONINGSERVICE_H
 
 #include <QObject>
-#include <QStringList>
 
 class ProvisioningService : public QObject
 {
@@ -19,21 +18,16 @@ class ProvisioningService : public QObject
 
 public:
     explicit ProvisioningService(QObject *parent = 0);
-	void Notify(const QByteArray &header, const QByteArray &body);
+    void Notify(const QByteArray &header, const QByteArray &body);
 
 public slots:
 
 
 private:
-    /*! \brief Decode a SyncML message from WbXML document
-     *
-     * @param aWbXMLDocument Message to decode
-     * @param aXMLDocument Output XML document
-     * @param aPrettyPrint If true prefer human-readable output, otherwise prefer compact size
-     * @return True on success, otherwise false
+    /*
+     * Decode WBXML to Prov 1.0 XML
      */
-    bool decodeFromWbXML( const QByteArray& aWbXMLDocument, QByteArray& aXMLDocument,
-                          bool aPrettyPrint ) const;
+    bool decodeWBXML(const QByteArray &wbxml, QByteArray &xml);
 
     /*
      * Parse PROV 1.0 data, return all found Access Point Names

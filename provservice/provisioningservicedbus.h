@@ -26,24 +26,23 @@ public:
         : QDBusAbstractAdaptor(aService), service(aService) { }
 
 public slots:
-	/*
-	 * Implements the mmsd PushConsumer interface
-	 */
-	Q_NOREPLY void Notify(const QByteArray &header, const QByteArray &body) {
-		qDebug() << "Notify";
-		service->Notify(header, body);
+    /*
+     * Implements the mmsd PushConsumer interface
+     */
+    Q_NOREPLY void Notify(const QByteArray &header, const QByteArray &body) {
+        service->Notify(header, body);
 	}
 
-	/*
-	 * Shut service down with
-	 * dbus-send --print-reply --session --dest="org.nemomobile.provision" /org/nemomobile/provision org.ofono.mms.PushConsumer.Release
-	 */
-	Q_NOREPLY void Release() {
-		qDebug() << "Release, exiting";
-		exit(0);
-	}
+    /*
+     * Shut service down with
+     * dbus-send --print-reply --session --dest="org.nemomobile.provision" /org/nemomobile/provision org.ofono.mms.PushConsumer.Release
+     */
+    Q_NOREPLY void Release() {
+        qDebug() << "Release, exiting";
+        exit(0);
+    }
 private:
-	ProvisioningService *service;
+    ProvisioningService *service;
 };
 
 #endif // PROVISIONINGSERVICEDBUS_H
