@@ -107,7 +107,7 @@ void ProvisioningService::Notify(const QByteArray &header, const QByteArray &bod
     qDebug() << "Notify(), header len " << header.length() <<
         ", body len " << body.length();
 
-#if 1 /*  Writing to file, useful for testing */
+#if 0 /*  Writing to file, useful for testing */
     QFile file_headerenc("/tmp/prov_header.wbxml");
     if (!file_headerenc.open(QIODevice::ReadWrite)) {
         qDebug() << "no file";
@@ -131,7 +131,7 @@ void ProvisioningService::Notify(const QByteArray &header, const QByteArray &bod
     qDebug() << "Decode success: " << success;
     qDebug() << "Decoded data:\n" << dst;
 
-#if 1 /*  Writing to file, useful for testing */
+#if 0 /*  Writing to file, useful for testing */
     QFile file_dec("/tmp/prov_body_decoded.xml");
     if (!file_dec.open(QIODevice::ReadWrite)) {
         qDebug() << "no file";
