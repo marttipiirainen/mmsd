@@ -1,23 +1,127 @@
+<?xml version="1.0"?>
 <!DOCTYPE wap-provisioningdoc PUBLIC "-//WAPFORUM//DTD PROV 1.0//EN" "http://www.wapforum.org/DTD/prov.dtd">
 <wap-provisioningdoc>
-<characteristic type="APPLICATION">
-<parm name="APPID" value="w5"/>
-<parm name="NAME" value="Sync Server"/>
-<parm name="TO-NAPID" value="INTERNET"/>
-<characteristic type="APPADDR">
-<parm name="ADDR" value="http://www.aftersales.com.au/sync4j/sync"/>
-<characteristic type="PORT">
-<parm name="PORTNBR" value="8080"/>
-</characteristic>
-</characteristic>
-<characteristic type="RESOURCE">
-<parm name="URI" value="./ycontact"/>
-<parm name="NAME" value="Contact DB"/>
-<parm name="AACCEPT" value="text/x-vcard,text/vcard"/>
-</characteristic>
-<characteristic type="APPAUTH">
-<parm name="AAUTHNAME" value="guest"/>
-<parm name="AAUTHSECRET" value="guest"/>
-</characteristic>
-</characteristic>
- </wap-provisioningdoc> 
+  <characteristic type="BOOTSTRAP">
+    <parm name="NAME" value="Sonera WAP+MMS+Internet+Streaming"/>
+  </characteristic>
+  <characteristic type="NAPDEF">
+    <parm name="NAPID" value="Sonera WAP"/>
+    <parm name="NAME" value="Sonera WAP"/>
+    <parm name="BEARER" value="GSM-GPRS"/>
+    <parm name="NAP-ADDRESS" value="wap.sonera.net"/>
+    <parm name="NAP-ADDRTYPE" value="APN"/>
+    <characteristic type="NAPAUTHINFO">
+      <parm name="AUTHTYPE" value="PAP"/>
+      <parm name="AUTHNAME" value=""/>
+      <parm name="AUTHSECRET" value=""/>
+    </characteristic>
+  </characteristic>
+  <characteristic type="PXLOGICAL">
+    <parm name="PROXY-ID" value="wap.gprs.dk"/>
+    <parm name="NAME" value="Sonera WAP"/>
+    <characteristic type="PXPHYSICAL">
+      <parm name="PXADDR" value="195.156.25.4"/>
+      <parm name="PXADDRTYPE" value="IPV4"/>
+      <parm name="TO-NAPID" value="Sonera WAP"/>
+      <characteristic type="PORT">
+        <parm name="PORTNBR" value="80"/>
+      </characteristic>
+    </characteristic>
+  </characteristic>
+  <characteristic type="APPLICATION">
+    <parm name="APPID" value="w2"/>
+    <parm name="TO-PROXY" value="wap.gprs.dk"/>
+    <parm name="NAME" value="Sonera WAP"/>
+    <characteristic type="RESOURCE">
+      <parm name="URI" value="http://m.surfport.fi"/>
+      <parm name="NAME" value="Sonera WAP"/>
+      <parm name="STARTPAGE"/>
+    </characteristic>
+  </characteristic>
+  <characteristic type="NAPDEF">
+    <parm name="NAPID" value="Sonera Internet"/>
+    <parm name="NAME" value="Sonera Internet"/>
+    <parm name="BEARER" value="GSM-GPRS"/>
+    <parm name="NAP-ADDRESS" value="internet"/>
+    <parm name="NAP-ADDRTYPE" value="APN"/>
+    <parm name="INTERNET"/>
+    <characteristic type="NAPAUTHINFO">
+      <parm name="AUTHTYPE" value="PAP"/>
+      <parm name="AUTHNAME" value=""/>
+      <parm name="AUTHSECRET" value=""/>
+    </characteristic>
+  </characteristic>
+  <characteristic type="APPLICATION">
+    <parm name="APPID" value="w2"/>
+    <parm name="TO-NAPID" value="Sonera Internet"/>
+    <parm name="NAME" value="Sonera Internet"/>
+    <characteristic type="RESOURCE">
+      <parm name="URI" value="http://m.surfport.fi"/>
+      <parm name="NAME" value="Sonera Internet"/>
+    </characteristic>
+  </characteristic>
+  <characteristic type="NAPDEF">
+    <parm name="NAPID" value="Sonera MMS"/>
+    <parm name="NAME" value="Sonera MMS"/>
+    <parm name="BEARER" value="GSM-GPRS"/>
+    <parm name="NAP-ADDRESS" value="wap.sonera.net"/>
+    <parm name="NAP-ADDRTYPE" value="APN"/>
+    <characteristic type="NAPAUTHINFO">
+      <parm name="AUTHTYPE" value="PAP"/>
+      <parm name="AUTHNAME" value=""/>
+      <parm name="AUTHSECRET" value=""/>
+    </characteristic>
+  </characteristic>
+  <characteristic type="PXLOGICAL">
+    <parm name="PROXY-ID" value="mms.gprs.dk"/>
+    <parm name="NAME" value="Sonera MMS"/>
+    <characteristic type="PXPHYSICAL">
+      <parm name="PXADDR" value="195.156.25.33"/>
+      <parm name="PXADDRTYPE" value="IPV4"/>
+      <parm name="TO-NAPID" value="Sonera MMS"/>
+      <characteristic type="PORT">
+        <parm name="PORTNBR" value="80"/>
+      </characteristic>
+    </characteristic>
+  </characteristic>
+  <characteristic type="APPLICATION">
+    <parm name="APPID" value="w4"/>
+    <parm name="TO-PROXY" value="mms.gprs.dk"/>
+    <parm name="NAME" value="Sonera MMS"/>
+    <parm name="ADDR" value="http://mms.sonera.fi:8002/"/>
+  </characteristic>
+  <characteristic type="PXLOGICAL">
+    <parm name="PROXY-ID" value="193.209.134.142"/>
+    <parm name="NAME" value="Sonera Streaming"/>
+    <parm name="STARTPAGE" value="http://wap.surfport.fi/video"/>
+    <characteristic type="PXPHYSICAL">
+      <parm name="PHYSICAL-PROXY-ID" value="193.209.134.142"/>
+      <parm name="PXADDR" value="193.209.134.142"/>
+      <parm name="PXADDRTYPE" value="IPV4"/>
+      <parm name="TO-NAPID" value="Sonera Streaming APN"/>
+      <characteristic type="PORT">
+        <parm name="PORTNBR" value="554"/>
+      </characteristic>
+    </characteristic>
+  </characteristic>
+  <characteristic type="NAPDEF">
+    <parm name="NAPID" value="Sonera Streaming APN"/>
+    <parm name="BEARER" value="GSM-GPRS"/>
+    <parm name="NAME" value="Sonera Streaming"/>
+    <parm name="NAP-ADDRESS" value="wap.sonera.net"/>
+    <parm name="NAP-ADDRTYPE" value="APN"/>
+    <characteristic type="NAPAUTHINFO">
+      <parm name="AUTHTYPE" value="PAP"/>
+      <parm name="AUTHNAME" value=""/>
+      <parm name="AUTHSECRET" value=""/>
+    </characteristic>
+  </characteristic>
+  <characteristic type="APPLICATION">
+    <parm name="APPID" value="554"/>
+    <parm name="NAME" value="Sonera Streaming"/>
+    <parm name="TO-PROXY" value="193.209.134.142"/>
+    <parm name="MAX-BANDWIDTH" value="384000"/>
+    <parm name="MIN-UDP-PORT" value="6970"/>
+    <parm name="MAX-UDP-PORT" value="65535"/>
+  </characteristic>
+</wap-provisioningdoc>

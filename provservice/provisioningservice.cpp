@@ -35,11 +35,24 @@
 ProvisioningService::ProvisioningService(QObject *parent)
     : QObject(parent)
 {
+
+#if 0 /* Reading from file, useful for testing */
+    QFile file_bodyenc("/tmp/prov_body.wbxml");
+    if (!file_bodyenc.open(QIODevice::ReadOnly)) {
+        qDebug() << "no file";
+        return;
+    }
+    QByteArray body = file_bodyenc.readAll();
+    qDebug() << "Read " << body.length() << " encoded bytes";
+    file_bodyenc.close();
+    this->Notify(QByteArray(), body);
+#else
     if(!QDBusConnection::sessionBus().registerService("org.nemomobile.provision"))
     {
         qDebug() << "Failed to register DBus service: " << QDBusConnection::sessionBus().lastError().message();
-        return;
     }
+#endif
+
     qDebug() << "ProvisioningService constructed.";
 }
 
@@ -94,7 +107,7 @@ void ProvisioningService::Notify(const QByteArray &header, const QByteArray &bod
     qDebug() << "Notify(), header len " << header.length() <<
         ", body len " << body.length();
 
-    /* Writing to files, useful for testing
+#if 1 /*  Writing to file, useful for testing */
     QFile file_headerenc("/tmp/prov_header.wbxml");
     if (!file_headerenc.open(QIODevice::ReadWrite)) {
         qDebug() << "no file";
@@ -110,7 +123,7 @@ void ProvisioningService::Notify(const QByteArray &header, const QByteArray &bod
     }
     qDebug() << "Wrote " << file_enc.write(body,body.length()) << " encoded bytes";
     file_enc.close();
-    */
+#endif
 
     /* Decoding WBXML ==> Prov 1.0 XML */
     QByteArray dst;
@@ -118,7 +131,7 @@ void ProvisioningService::Notify(const QByteArray &header, const QByteArray &bod
     qDebug() << "Decode success: " << success;
     qDebug() << "Decoded data:\n" << dst;
 
-    /*
+#if 1 /*  Writing to file, useful for testing */
     QFile file_dec("/tmp/prov_body_decoded.xml");
     if (!file_dec.open(QIODevice::ReadWrite)) {
         qDebug() << "no file";
@@ -126,7 +139,7 @@ void ProvisioningService::Notify(const QByteArray &header, const QByteArray &bod
     }
     qDebug() << "Wrote " << file_dec.write(dst,dst.length()) << " decoded bytes";
     file_dec.close();
-    */
+#endif
 
     /* Parsing Prov 1.0 XML ==> actual internet, MMS etc. settings */
     qDebug() << "Start XML parsing";
@@ -150,8 +163,9 @@ void ProvisioningService::Notify(const QByteArray &header, const QByteArray &bod
 bool ProvisioningService::decodeWBXML(const QByteArray& wbxml, QByteArray& xml)
 {
     WBXMLGenXMLParams params;
-    params.lang = WBXML_LANG_UNKNOWN;
-    params.gen_type = WBXML_GEN_XML_COMPACT;
+    params.lang = WBXML_LANG_PROV10;
+    params.gen_type = WBXML_GEN_XML_INDENT;
+    params.indent = 2;
 
     const WB_UTINY* wbxmlptr = reinterpret_cast<const WB_UTINY*>(wbxml.constData());
     WB_ULONG wbxml_len = wbxml.size();
