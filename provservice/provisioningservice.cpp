@@ -16,13 +16,8 @@
 #include <QStringList>
 #include <QFile>
 #include <QDebug>
-
-#include <QDBusError>
-#include <QDBusConnection>
-
 #include <QXmlStreamReader>
-#include <QProcess>
-#include <QThread>
+#include <QtDBus>
 
 #include "provisioningservice.h"
 #include "provisioningservicedbus.h"
@@ -146,14 +141,30 @@ void ProvisioningService::Notify(const QByteArray &header, const QByteArray &bod
     QStringList apns = this->Parse(dst);
     qDebug() << "Done XML parsing, found these APNs: " << apns;
 
-    if (apns.count() > 0) {
-        qDebug() << "Creating oFono Context for APN " << apns.at(0);
-        /* TODO: Use proper D-Bus API, not oFono test python script */
-        /* TODO: Do this for all APNs and access point types */
-        QStringList arguments;
-        arguments << apns.at(0);
-        QProcess *scriptProcess = new QProcess(this);
-        scriptProcess->start("/usr/lib/ofono/test/create-internet-context", arguments);
+    QStringListIterator it(apns);
+    while (it.hasNext()) {
+
+        const QString apn = it.next();
+        qDebug() << "Creating oFono Context for APN " << apn;
+
+        QDBusInterface ofonoConnMan("org.ofono", "/ril_0" /* TODO hard-coded! */,
+            "org.ofono.ConnectionManager", QDBusConnection::systemBus());
+        /* Create new context */
+        QDBusReply<QDBusObjectPath> addReply = ofonoConnMan.call("AddContext",
+            "internet" /* TODO context types (internet, mms, ...) */);
+        if (addReply.isValid()) {
+
+           /* Set context's AP name */
+           QDBusInterface ofonoContext("org.ofono", addReply.value().path(),
+               "org.ofono.ConnectionContext", QDBusConnection::systemBus());
+           QDBusReply<void> propReply = ofonoContext.call("SetProperty",
+               "AccessPointName", apn /* TODO wrong signature! */);
+           if (!propReply.isValid())
+               qDebug() << "DBus error in SetProperty: " << propReply.error();
+
+        } else
+            qDebug() << "DBus error in AddContext: " << addReply.error();
+
     }
 }
 
