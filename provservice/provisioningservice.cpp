@@ -157,8 +157,13 @@ void ProvisioningService::Notify(const QByteArray &header, const QByteArray &bod
            /* Set context's AP name */
            QDBusInterface ofonoContext("org.ofono", addReply.value().path(),
                "org.ofono.ConnectionContext", QDBusConnection::systemBus());
-           QDBusReply<void> propReply = ofonoContext.call("SetProperty",
-               "AccessPointName", apn /* TODO wrong signature! */);
+
+           QList<QVariant> apnArgList;
+           apnArgList << QVariant("AccessPointName");
+           apnArgList << QVariant::fromValue(QDBusVariant(apn));
+           QDBusReply<void> propReply = ofonoContext.callWithArgumentList(
+               QDBus::AutoDetect, "SetProperty", apnArgList);
+
            if (!propReply.isValid())
                qDebug() << "DBus error in SetProperty: " << propReply.error();
 
